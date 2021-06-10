@@ -9,6 +9,8 @@ Python module for extracting annual coal plant generation and related data; for 
 ### TODO: 
 > extract coal plant capacities (from EIA-860), from ijdb CoalPlants module
 
+> extract wind speed class data from ijbd powGen module (specifically, 'wind_class_generation.py')
+
 > upload finished 'RenewableCosts.py'
 
 ### Data Sources:
