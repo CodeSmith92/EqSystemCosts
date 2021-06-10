@@ -65,8 +65,8 @@ del FuelCostList['FUEL_COST']
 
 # Check Average Heat Content of UNR Coal Plants
 print("Average Heat Content: ", FuelCostList['AvgHeatContent'].mean())
-FuelCostList['FuelCost']= 1.925  # Calculated Value
-FCL_clean = FuelCostList.groupby('ORIS_ID')["FuelCost"].mean().rename("EST_FUEL_COST").reset_index()
+FuelCostList['FuelCost'] = 1.925  # Calculated Value
+FCL_Clean = FuelCostList.groupby('ORIS_ID')["FuelCost"].mean().rename("EST_FUEL_COST").reset_index()
 
 # Merge Dataframes Based on ORIS ID
 CoalCosts = pd.merge(CPL_Clean, FCL_Clean, on=['ORIS_ID'])
