@@ -8,6 +8,7 @@ Python module for extracting annual coal plant generation and related data; for 
 
 ### TODO: 
 > extract coal plant capacities (from EIA-860), from ijdb CoalPlants module
+
 > upload finished 'RenewableCosts.py'
 
 ### Data Sources:
