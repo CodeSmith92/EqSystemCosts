@@ -6,13 +6,13 @@ Python module for extracting annual coal plant generation and related data; for 
 * 06/10/2021
 > uploaded 'CoalCosts.py' which will calculate annualized operation costs for US coal plants (excluding combined heat and power plants)
 
+* 06/15/2021
+> re-uploaded 'CoalCosts.py' which splits the script into a series of functions 
+
 ### TODO: 
-> extract coal plant capacities (from EIA-860), from ijdb CoalPlants module
 
 > extract wind speed class data from ijbd powGen module (specifically, 'wind_class_generation.py')
 
-> clean code by creating necessary functions
-
-> upload finished 'RenewableCosts.py'
+> update/finish functions in 'RenewableCosts.py'
 
 ### Data Sources:
