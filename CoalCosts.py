@@ -48,7 +48,7 @@ def getPlantList():
 
     return cpl
 
-
+# Regulated coal plant costs
 def getRegCoalCosts():
     """ calculates annual operation costs for regulated coal plants """
 
@@ -95,7 +95,7 @@ def getRegCoalCosts():
     return coalCostsReg
 
 
-# Unregulated Coal Plants
+# Unregulated coal plant costs
 def getUnrCoalCosts():
     """ estimates annual operation costs for unregulated coal plants """
 
