@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import argparse
+import geopandas as gpd
+from shapely.geometry import Point
 import os
 
 parser = argparse.ArgumentParser(description='Download wind and solar resource data, then use PySAM to convert to '
@@ -8,9 +10,9 @@ parser = argparse.ArgumentParser(description='Download wind and solar resource d
 parser.add_argument('--year', type=int, choices=[2010, 2011, 2012, 2013, 2014], help='Data year. Must be in '
                                                                                      '2010-2014 (inclusive).')
 parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ '
-                                                'https://developer.nrel.gov/signup/')
-parser.add_argument('--email', type=str, help='Email address.')
-parser.add_argument('--geometry', type=str, help='Option for choosing sites.', choices=['point', 'grid', 'state'])
+                                                'https://developer.nrel.gov/signup/',
+                    default='qgjZ5sr5MHoI26rC69QfLhIM9T5xsRGHwPiGWi8j')
+parser.add_argument('--email', type=str, help='Email address.', default='dcorrell@umich.edu')
 parser.add_argument('--save_resource', help='Save resource data in addition to generation data, THIS COULD TAKE A LOT '
                                             'OF DISK SPACE', action='store_true')
 parser.add_argument('--verbose', action='store_true')
@@ -30,7 +32,7 @@ path = f'/Users/{user_name}/Desktop/'
 local_path = os.path.dirname(__file__)
 
 
-def getWindCAPEX(year, lat, lon):
+def getWindCAPEX(year, states):
     """ calculate land-based wind capital expenditure (CAPEX) based on geographic location (average wind speed) """
 
     windSRW = os.path.join(local_path, 'resourceData/{lat}_{lon}_wtk.srw'.format(lat=lat, lon=lon))
@@ -92,3 +94,45 @@ def getWindCAPEX(year, lat, lon):
     windSRW.to_csv(windClassOUT, index=False)
 
     return windSRW, windClass
+
+
+def getStateCoords():
+
+    states = ['AL', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'ID', 'IL',
+              'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO',
+              'MT', 'NE', 'NV', 'NH', 'NH', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR',
+              'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI',
+              'WY']
+    for state in args.states:
+        if state in states:
+            # get outer bounds
+            usShp = gpd.read_file(os.path.join(local_path, 'states/s_11au16.shp'))
+            statesShp = usShp[usShp['STATE'].isin(states)]
+            bounds = statesShp.total_bounds
+
+            coordinates = []
+
+            bounds = statesShp.total_bounds
+            min_lon = round(bounds[0], 2)
+            min_lat = round(bounds[1], 2)
+            max_lon = round(bounds[2], 2)
+            max_lat = round(bounds[3], 2)
+            lat = min_lat
+            print(lat)
+            while lat <= max_lat:
+                lon = min_lon
+                while lon <= max_lon:
+                    if statesShp.contains(Point(lon, lat)).any():
+                        coordinates.append((lat, lon))
+                    lon += args.deg_resolution
+                lat += args.deg_resolution
+
+            return coordinates
+
+
+def main():
+    print(getStateCoords())
+
+
+if __name__ == '__main__':
+    main()
