@@ -5,16 +5,15 @@ import geopandas as gpd
 from shapely.geometry import Point
 import os
 
-parser = argparse.ArgumentParser(description='Download wind and solar resource data, then use PySAM to convert to '
-                                             'hourly capacity factors.')
+parser = argparse.ArgumentParser(description='TBD')
 parser.add_argument('--year', type=int, choices=[2010, 2011, 2012, 2013, 2014], help='Data year. Must be in '
                                                                                      '2010-2014 (inclusive).')
 parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ '
                                                 'https://developer.nrel.gov/signup/',
                     default='qgjZ5sr5MHoI26rC69QfLhIM9T5xsRGHwPiGWi8j')
 parser.add_argument('--email', type=str, help='Email address.', default='dcorrell@umich.edu')
-parser.add_argument('--save_resource', help='Save resource data in addition to generation data, THIS COULD TAKE A LOT '
-                                            'OF DISK SPACE', action='store_true')
+parser.add_argument('--geometry', type=str, help='Option for choosing sites.', choices=['point', 'grid', 'state'])
+parser.add_argument('--save_resource', help='Save resource data', action='store_true')
 parser.add_argument('--verbose', action='store_true')
 parser.add_argument('--lat', type=float, help='Required if geometry=point')
 parser.add_argument('--lon', type=float, help='Required if geometry=point')
@@ -27,12 +26,13 @@ parser.add_argument('--deg_resolution', type=float, default=.04, help='Approxima
                                                                       'geometry=state or geometry=grid, default .04')
 
 args = parser.parse_args()
+
 user_name = 'mr_smith'
-path = f'/Users/{user_name}/Desktop/'
+user_path = f'/Users/{user_name}/Desktop/'
 local_path = os.path.dirname(__file__)
 
 
-def getWindCAPEX(year, states):
+def getWindCAPEX(year, lat, lon):
     """ calculate land-based wind capital expenditure (CAPEX) based on geographic location (average wind speed) """
 
     windSRW = os.path.join(local_path, 'resourceData/{lat}_{lon}_wtk.srw'.format(lat=lat, lon=lon))
@@ -90,44 +90,43 @@ def getWindCAPEX(year, states):
     # TODO: add CAPEX values to column based on wind-class
 
     # Local file output
-    windClassOUT = os.path.join(path, 'windClassOUT.csv')
+    windClassOUT = os.path.join(user_path, 'windClassOUT.csv')
     windSRW.to_csv(windClassOUT, index=False)
 
     return windSRW, windClass
 
 
 def getStateCoords():
+    states = args.states
+    if 'CONTINENTAL' in args.states:
+        states = ['AL', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'ID', 'IL',
+                  'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO',
+                  'MT', 'NE', 'NV', 'NH', 'NH', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR',
+                  'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI',
+                  'WY']
+    # get outer bounds
+    usShp = gpd.read_file(os.path.join(local_path, 'states/s_11au16.shp'))
+    statesShp = usShp[usShp['STATE'].isin(states)]
+    bounds = statesShp.total_bounds
 
-    states = ['AL', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'ID', 'IL',
-              'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO',
-              'MT', 'NE', 'NV', 'NH', 'NH', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR',
-              'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI',
-              'WY']
-    for state in args.states:
-        if state in states:
-            # get outer bounds
-            usShp = gpd.read_file(os.path.join(local_path, 'states/s_11au16.shp'))
-            statesShp = usShp[usShp['STATE'].isin(states)]
-            bounds = statesShp.total_bounds
+    coordinates = []
 
-            coordinates = []
+    bounds = statesShp.total_bounds
+    min_lon = round(bounds[0], 2)
+    min_lat = round(bounds[1], 2)
+    max_lon = round(bounds[2], 2)
+    max_lat = round(bounds[3], 2)
+    lat = min_lat
+    print(lat)
+    while lat <= max_lat:
+        lon = min_lon
+        while lon <= max_lon:
+            if statesShp.contains(Point(lon, lat)).any():
+                coordinates.append((lat, lon))
+            lon += args.deg_resolution
+        lat += args.deg_resolution
 
-            bounds = statesShp.total_bounds
-            min_lon = round(bounds[0], 2)
-            min_lat = round(bounds[1], 2)
-            max_lon = round(bounds[2], 2)
-            max_lat = round(bounds[3], 2)
-            lat = min_lat
-            print(lat)
-            while lat <= max_lat:
-                lon = min_lon
-                while lon <= max_lon:
-                    if statesShp.contains(Point(lon, lat)).any():
-                        coordinates.append((lat, lon))
-                    lon += args.deg_resolution
-                lat += args.deg_resolution
-
-            return coordinates
+    return coordinates
 
 
 def main():
