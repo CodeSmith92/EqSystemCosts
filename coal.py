@@ -1,10 +1,9 @@
 import pandas as pd
 import os
 
-# Change user_name and path accordingly
-user_name = 'mr_smith'
-path = f'/Users/{user_name}/Desktop/'
 
+local_path = os.path.dirname(os.path.abspath(__file__))
+coal_output = os.path.join(local_path, 'coal_data_output/' )
 
 def getPlantList():
     """ subsets and cleans EIA-923 page 1 data for use in decarb + equity optimization model """
@@ -42,8 +41,8 @@ def getPlantList():
     del cpl['FuelCon_MMBTU']
     del cpl['Gen_MWh']
 
-    # Local file output
-    cpl_output = os.path.join(path, 'CoalPlantList.csv')
+    # Save and output file
+    cpl_output = os.path.join(coal_output, 'CoalPlantList.csv')
     cpl.to_csv(cpl_output, index=False)
 
     return cpl
@@ -89,7 +88,7 @@ def getRegCoalCosts():
     coalCostsReg['Coal_FOPEX'] = 40  # $/kW-yr
 
     # Local file output
-    ccr_output = os.path.join(path, 'CoalCostsReg.csv')
+    ccr_output = os.path.join(coal_output, 'CoalCostsReg.csv')
     coalCostsReg.to_csv(ccr_output, index=False)
 
     return coalCostsReg
@@ -134,7 +133,7 @@ def getUnrCoalCosts():
     coalCostsUnr['Coal_FOPEX'] = 40  # $/kW-yr
 
     # Local file output
-    ccu_output = os.path.join(path, 'CoalCostsUnr.csv')
+    ccu_output = os.path.join(coal_output, 'CoalCostsUnr.csv')
     coalCostsUnr.to_csv(ccu_output, index=False)
 
     return coalCostsUnr
@@ -149,7 +148,7 @@ def mergeCosts():
     costsTotal = pd.concat([costsReg, costsUnr], ignore_index=True)
 
     # Local file output
-    cct_output = os.path.join(path, 'CoalCostsTotal.csv')
+    cct_output = os.path.join(coal_output, 'coal_costs_total.csv')
     costsTotal.to_csv(cct_output, index=False)
 
     return costsTotal
