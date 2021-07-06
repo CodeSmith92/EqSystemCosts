@@ -34,7 +34,7 @@ args = parser.parse_args()
 def getWindData(year, lat, lon):
     """ by year and coordinate --> retrieves wind resource data from NREL's WIND Toolkit and ATB 2020 """
 
-    windCSV = os.path.join(local_path, f'windData/{lat}_{lon}_wtk.csv')
+    windCSV = os.path.join(local_path, f'wind_data_output/{lat}_{lon}_wtk.csv')
 
     if not os.path.exists(windCSV):
         wtk_url = 'https://developer.nrel.gov/api/wind-toolkit/v2/wind/wtk-srw-download'
