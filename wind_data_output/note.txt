@@ -1,0 +1,1 @@
+This is where wind resource and cost data is saved/loaded.
