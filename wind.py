@@ -15,7 +15,6 @@ parser.add_argument('--year', type=int, choices=[2010, 2011, 2012, 2013, 2014], 
 parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ https://developer.nrel.gov/signup/')
 parser.add_argument('--email', type=str, help='Email address.')
 parser.add_argument('--geometry', type=str, help='Option for choosing sites.', choices=['grid', 'state'])
-parser.add_argument('--verbose', action='store_true')
 parser.add_argument('--min_lat', type=float, help='Required if geometry=grid')
 parser.add_argument('--max_lat', type=float, help='Required if geometry=grid')
 parser.add_argument('--min_lon', type=float, help='Required if geometry=grid')
@@ -33,7 +32,7 @@ args = parser.parse_args()
 
 
 def getWindData(year, lat, lon):
-    """ by year and coordinate --> retrieve wind resource data and wind speed class from NREL's WIND Toolkit """
+    """ by year and coordinate --> retrieves wind resource data from NREL's WIND Toolkit and ATB 2020 """
 
     windCSV = os.path.join(local_path, f'windData/{lat}_{lon}_wtk.csv')
 
@@ -60,7 +59,7 @@ def getWindData(year, lat, lon):
     # Find wind speed
     windSpeed100 = np.median(pd.read_csv(windCSV, skiprows=[0, 1, 3, 4], usecols=['Speed']).values)
 
-    # Adapted from NREL ATB 2020
+    # Adapted from NREL ATB 2020 .. wind speed is in units of m/s
     if windSpeed100 >= 9.01:
         windClass = 1
         CAPEX = 1642.02
@@ -96,10 +95,6 @@ def getWindData(year, lat, lon):
         CAPEX = 'NA'
 
     return lat, lon, windSpeed100, windClass, CAPEX
-
-
-def getWindCosts():
-    """ calculate land-based wind capital expenditure (CAPEX) based on geographic location (average wind speed) """
 
 
 def getCoords():
@@ -151,17 +146,29 @@ def getCoords():
 
 def main():
 
-    print(local_path)
+    print(f'local path: {local_path}')
     print(getCoords())
 
     year = args.year
     coords = getCoords()
     print(f'{len(coords)} coordinates found...')
 
+    data = []
     for i in range(len(coords)):
         lat = coords[i][0]
         lon = coords[i][1]
         print(getWindData(year, lat, lon))
+
+        data.append((getWindData(year, lat, lon)))
+
+    windCosts = pd.DataFrame(data, columns=('lat', 'lon',  'windSpeed', 'windClass', 'CAPEX'))
+
+    # Value based on NREL ATB 2020 and Lazard v14.0 reports
+    windCosts['FOPEX'] = 40  # $/kW-yr
+
+    # Output
+    out_path = os.path.join(local_path, 'wind_costs.csv')
+    windCosts.to_csv(out_path, index=False)
 
 
 if __name__ == '__main__':
