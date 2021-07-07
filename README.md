@@ -10,7 +10,8 @@ Python module for extracting annual coal plant generation and related data; for 
 > re-uploaded 'CoalCosts.py' which splits the script into a series of functions 
 
 * 07/07/2021
-> uploaded edits to coal.py (formerly 'CoalCosts.py') and wind.py (debugged + tested) 
+> uploaded edits to coal.py (formerly 'CoalCosts.py') and wind.py (debugged + tested)
+> uploaded solar.py 
 
 
 ### TODO: 
