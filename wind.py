@@ -5,16 +5,17 @@ import geopandas as gpd
 from shapely.geometry import Point
 import os
 
-
 local_path = os.path.dirname(os.path.abspath(__file__))
 
 # CLI arguments
 parser = argparse.ArgumentParser(description='Command line arguments for data extraction and cost calculations')
 parser.add_argument('--year', type=int, choices=[2010, 2011, 2012, 2013, 2014], help='Data year. Must be in '
-                                                                                     '2010-2014 (inclusive).')
-parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ https://developer.nrel.gov/signup/')
-parser.add_argument('--email', type=str, help='Email address.')
-parser.add_argument('--geometry', type=str, help='Option for choosing sites.', choices=['grid', 'state'])
+                                                                                     '2010-2014 (inclusive).',
+                    required=True)
+parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ https://developer.nrel.gov/signup/',
+                    required=True)
+parser.add_argument('--email', type=str, help='Email address.', required=True)
+parser.add_argument('--geometry', type=str, help='Option for choosing sites.', choices=['grid', 'state'], required=True)
 parser.add_argument('--min_lat', type=float, help='Required if geometry=grid')
 parser.add_argument('--max_lat', type=float, help='Required if geometry=grid')
 parser.add_argument('--min_lon', type=float, help='Required if geometry=grid')
@@ -145,7 +146,6 @@ def getCoords():
 
 
 def main():
-
     print(f'local path: {local_path}')
     print(getCoords())
 
@@ -161,13 +161,13 @@ def main():
 
         data.append((getWindData(year, lat, lon)))
 
-    windCosts = pd.DataFrame(data, columns=('lat', 'lon',  'windSpeed', 'windClass', 'CAPEX'))
+    windCosts = pd.DataFrame(data, columns=('lat', 'lon', 'windSpeed', 'windClass', 'CAPEX'))
 
     # Value based on NREL ATB 2020 and Lazard v14.0 reports
     windCosts['FOPEX'] = 40  # $/kW-yr
 
     # Output
-    out_path = os.path.join(local_path, 'wind_costs.csv')
+    out_path = os.path.join(local_path, 'wind_data_output/wind_costs.csv')
     windCosts.to_csv(out_path, index=False)
 
 
