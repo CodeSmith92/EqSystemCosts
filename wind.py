@@ -60,7 +60,7 @@ def getWindData(year, lat, lon):
     # Find wind speed
     windSpeed100 = np.median(pd.read_csv(windCSV, skiprows=[0, 1, 3, 4], usecols=['Speed']).values)
 
-    # Adapted from NREL ATB 2020 .. wind speed is in units of m/s
+    # Adapted from NREL ATB 2020 .. wind speed (m/s), CAPEX ($/kW)
     if windSpeed100 >= 9.01:
         windClass = 1
         CAPEX = 1642.02
