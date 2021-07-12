@@ -60,37 +60,37 @@ def getWindData(year, lat, lon):
     # Find wind speed
     windSpeed100 = np.median(pd.read_csv(windCSV, skiprows=[0, 1, 3, 4], usecols=['Speed']).values)
 
-    # Adapted from NREL ATB 2020 .. wind speed (m/s), CAPEX ($/kW)
+    # Adapted from NREL ATB 2020 .. wind speed (m/s), CAPEX ($/MW)
     if windSpeed100 >= 9.01:
         windClass = 1
-        CAPEX = 1642.02
+        CAPEX = 1642020
     elif windSpeed100 >= 8.77:
         windClass = 2
-        CAPEX = 1523.73
+        CAPEX = 1523730
     elif windSpeed100 >= 8.57:
         windClass = 3
-        CAPEX = 1492.62
+        CAPEX = 1492620
     elif windSpeed100 >= 8.35:
         windClass = 4
-        CAPEX = 1483.59
+        CAPEX = 1483590
     elif windSpeed100 >= 8.07:
         windClass = 5
-        CAPEX = 1522.56
+        CAPEX = 1522560
     elif windSpeed100 >= 7.62:
         windClass = 6
-        CAPEX = 1665.03
+        CAPEX = 1665030
     elif windSpeed100 >= 7.1:
         windClass = 7
-        CAPEX = 1830.93
+        CAPEX = 1830930
     elif windSpeed100 >= 6.53:
         windClass = 8
-        CAPEX = 2168.57
+        CAPEX = 2168570
     elif windSpeed100 >= 5.9:
         windClass = 9
-        CAPEX = 2548.91
+        CAPEX = 2548910
     elif windSpeed100 >= 1.72:
         windClass = 10
-        CAPEX = 2690.06
+        CAPEX = 2690060
     else:
         windClass = 'NA'
         CAPEX = 'NA'
@@ -164,11 +164,13 @@ def main():
     windCosts = pd.DataFrame(data, columns=('lat', 'lon', 'windSpeed', 'windClass', 'CAPEX'))
 
     # Value based on NREL ATB 2020 and Lazard v14.0 reports
-    windCosts['FOPEX'] = 40  # $/kW-yr
+    windCosts.loc[:, 'FOPEX'] = 40  # $/kW-yr
 
     # Output
     out_path = os.path.join(local_path, 'wind_data_output/wind_costs.csv')
     windCosts.to_csv(out_path, index=False)
+
+    print('finished!')
 
 
 if __name__ == '__main__':
