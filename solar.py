@@ -130,7 +130,7 @@ def main():
 
     # Value based on NREL ATB 2020 and Lazard v14.0 reports
     solarCosts.loc[:, 'FOPEX'] = 15  # $/kW-yr
-    solarCosts.loc[:, 'CAPEX'] = 1300  # $/kW
+    solarCosts.loc[:, 'CAPEX'] = 1300000  # $/MW
 
     # Output
     out_path = os.path.join(local_path, 'solar_data_output/solar_costs.csv')
@@ -141,4 +141,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
