@@ -18,4 +18,4 @@ Python module for extracting annual coal plant generation and related data; for 
 
 > DOCUMENTATION HERE
 
-### Data Sources:
+### Sources:
