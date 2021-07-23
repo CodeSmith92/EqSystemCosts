@@ -20,6 +20,7 @@ Python module for extracting annual coal plant generation and related data; for 
 
 > DOCUMENTATION HERE
 
+
 ### Data sources:
 
 1. [Wind Resource Data](https://www.nrel.gov/grid/wind-toolkit.html) [1-4]
@@ -29,6 +30,9 @@ Python module for extracting annual coal plant generation and related data; for 
 3. [State shapefiles](https://www.weather.gov/gis/USStates) [6]
  
 4. [EIA-923](https://www.eia.gov/electricity/data/eia923/)
+
+### EIA-923
+>The survey Form EIA-923 collects detailed electric power data -- monthly and annually -- on electricity generation, fuel consumption, fossil fuel stocks, and receipts at the power plant and prime mover level.
 
 ## Citations
 [1] Draxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. Overview and Meteorological Validation of the Wind Integration National Dataset Toolkit (Technical Report, NREL/TP-5000-61740). Golden, CO: National Renewable Energy Laboratory.
