@@ -13,7 +13,7 @@ Python module for extracting annual coal plant generation and related data; for 
 > uploaded edits to coal.py (formerly 'CoalCosts.py') and wind.py (debugged + tested)
 > uploaded solar.py 
 
-* 07/24/2021
+* 07/23/2021
 > added 'year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX and VOPEX values for operational coal plants (based on EIA-923 data)
 
 ### TODO: 
