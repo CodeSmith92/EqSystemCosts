@@ -1,6 +1,6 @@
 # EqSystemCosts
 
-Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs; and for calculating the capital and operational costs of wind and solar power. Relies on data input from EIA-923 (2015-present). 
+Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs; and for calculating the capital and operational costs of wind and solar power. The file 'coal.py' relies primarily on data input from EIA-923 (2015-present). 
 
 ## Updates 
 
