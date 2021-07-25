@@ -129,7 +129,7 @@ def main():
     solarCosts = pd.DataFrame(data, columns=('lat', 'lon', 'nsrdbLat', 'nsrdbLon', 'elevation'))
 
     # Value based on NREL ATB 2020 and Lazard v14.0 reports
-    solarCosts.loc[:, 'FOPEX'] = 15  # $/kW-yr
+    solarCosts.loc[:, 'FOPEX'] = 15 * (10**3)  # $/MW-yr
     solarCosts.loc[:, 'CAPEX'] = 1300000  # $/MW
 
     # Output
@@ -141,3 +141,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
