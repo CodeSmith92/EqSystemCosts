@@ -57,10 +57,10 @@ def getCoords():
 
     bounds = statesShp.total_bounds
 
-    min_lon = round(bounds[0], 3)
-    min_lat = round(bounds[1], 3)
-    max_lon = round(bounds[2], 3)
-    max_lat = round(bounds[3], 3)
+    min_lon = round(bounds[0], 2)
+    min_lat = round(bounds[1], 2)
+    max_lon = round(bounds[2], 2)
+    max_lat = round(bounds[3], 2)
 
     lat = min_lat
 
