@@ -127,10 +127,10 @@ def getCoords():
 
     bounds = statesShp.total_bounds
 
-    min_lon = round(bounds[0], 2)
-    min_lat = round(bounds[1], 2)
-    max_lon = round(bounds[2], 2)
-    max_lat = round(bounds[3], 2)
+    min_lon = round(bounds[0], 3)
+    min_lat = round(bounds[1], 3)
+    max_lon = round(bounds[2], 3)
+    max_lat = round(bounds[3], 3)
 
     lat = min_lat
 
@@ -164,7 +164,7 @@ def main():
     windCosts = pd.DataFrame(data, columns=('lat', 'lon', 'windSpeed', 'windClass', 'CAPEX'))
 
     # Value based on NREL ATB 2020 and Lazard v14.0 reports
-    windCosts.loc[:, 'FOPEX'] = 40  # $/kW-yr
+    windCosts.loc[:, 'FOPEX'] = 40 * (10**3)  # $/MW-yr
 
     # Output
     out_path = os.path.join(local_path, 'wind_data_output/wind_costs.csv')
