@@ -42,7 +42,7 @@ When running from the command line, terminal, or shell, the '--year' parameter m
 
 | Key   | Type | Options | Required | Description|
 | ----- | ---- | --------| -------- | ---------- |
-| `year`  | int  | 2010-2014 (wind); 2016-2020 (solar) (| Yes     | Inclusive  |
+| `year`  | int  | 2010-2014 (wind); 2016-2020 (solar) | Yes     | Inclusive  |
 | `api_key` | str |         | Yes     |            |
 | `email`  | str  |         | Yes     |            |
 | `geometry` | str | `grid`, `state` | Yes | RE site options --> `grid`: Every point in a grid from a min lat/lon to a max lat/lon. `state`: Grid bounded by one or multiple states.|
