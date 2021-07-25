@@ -1,15 +1,61 @@
 # EqSystemCosts
 
-Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs; and for calculating the capital and operational costs of wind and solar power. The file 'coal.py' relies primarily on data input from EIA-923 (2015-present). 
+Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs (FOPEX ($/MW-yr) and VOPEX ($/MWh)); and for calculating the capital and operational costs (CAPEX ($/MW) and FOPEX ($/MW-yr)) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. 
 
 ## Updates 
 
 * 07/23/2021
-> added 'year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX and VOPEX values for operational coal plants (based on EIA-923 data)
+> Added 'year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX ($/MW-yr) and VOPEX ($/MWh) values for operational coal plants (based on EIA-923 data)
 
-### TODO: 
+## Setup
+1. Get an [NREL API Key](https://developer.nrel.gov/signup/):
+> Only necesarry for 'wind.py' and 'solar.py'
 
-> DOCUMENTATION HERE
+2. Install dependencies:
+
+        pip install numpy
+        pip install pandas
+        pip install geopandas
+        pip install argparse
+        pip install shapely
+       
+        
+3. Clone repository:
+
+        git clone https://github.com/CodeSmith92/EqSystemCosts.git
+
+
+## CLI: Coal
+
+When running from the command line, terminal, or shell, the '--year' parameter must be passed as a key-value pair. For example:
+
+    python coal.py --year 2020
+
+
+
+| Key   | Type | Options | Required | Description|
+| ----- | ---- | --------| -------- | ---------- |
+| `year`  | int  | 2015-2020| Yes     | Inclusive  |
+
+
+## CLI: Wind and Solar
+
+| Key   | Type | Options | Required | Description|
+| ----- | ---- | --------| -------- | ---------- |
+| `year`  | int  | 2010-2014 (wind); 2016-2020 (solar) (| Yes     | Inclusive  |
+| `api_key` | str |         | Yes     |            |
+| `email`  | str  |         | Yes     |            |
+| `geometry` | str | `grid`, `state` | Yes | RE site options --> `grid`: Every point in a grid from a min lat/lon to a max lat/lon. `state`: Grid bounded by one or multiple states.|
+| `min_lat`   | float |         | If `grid` |            |
+| `min_lon`   | float |         | If `grid` |            |
+| `max_lat`   | float |         | If `grid` |            |
+| `max_lon`   | float |         | If `grid` |            |
+| `states`    | str |        | If `state` | Choose states in which to build wind farms and/or solar parks... e.g. 'NJ NY' (for New Jersey and New York).. Input == 'CONTINENTAL' for entire US. |
+| `deg_resolution` | float | >.04| If `grid` or `state` | Lat/lon resolution (in degrees). **Default:** .04 |
+
+Example:
+
+    python wind.py --year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution .5 --states NJ NY CT PA DE VA
 
 
 ### Data sources:
