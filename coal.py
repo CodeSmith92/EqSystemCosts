@@ -52,7 +52,7 @@ def getPlantList():
     del cpl['Gen_MWh']
 
     # Save and output file
-    cpl_output = os.path.join(coal_output, 'CoalPlantList.csv')
+    cpl_output = os.path.join(coal_output, f'CoalPlantList{year}.csv')
     cpl.to_csv(cpl_output, index=False)
 
     return cpl
@@ -100,7 +100,7 @@ def getRegCoalCosts():
     coalCostsReg.loc[:, 'Coal_FOPEX'] = 40 * (10**3)  # $/MW-yr
 
     # Local file output
-    reg_output = os.path.join(coal_output, 'CoalCostsReg.csv')
+    reg_output = os.path.join(coal_output, f'CoalCostsReg{year}.csv')
     coalCostsReg.to_csv(reg_output, index=False)
 
     return coalCostsReg
@@ -147,7 +147,7 @@ def getUnrCoalCosts():
     coalCostsUnr.loc[:, 'Coal_FOPEX'] = 40 * (10**3)  # $/MW-yr
 
     # Local file output
-    unr_output = os.path.join(coal_output, 'CoalCostsUnr.csv')
+    unr_output = os.path.join(coal_output, f'CoalCostsUnr{year}.csv')
     coalCostsUnr.to_csv(unr_output, index=False)
 
     return coalCostsUnr
@@ -157,7 +157,7 @@ def mergeCosts():
     """ merges annual operation cost dataframes for regulated and unregulated coal plants  """
 
     year = args.year
-    
+
     costsReg = getRegCoalCosts()
     costsUnr = getUnrCoalCosts()
 
@@ -175,7 +175,7 @@ def main():
 
     cwd = os.getcwd()  # Get the current working directory (cwd)
     files = os.listdir(cwd)  # Get all the files in that directory
-    print(f'Files in {cwd!r}: {files}')
+    print(f'Files in {cwd}: {files}')
 
     print(mergeCosts())
     print('Finished!')
