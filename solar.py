@@ -24,9 +24,6 @@ parser.add_argument('--states', nargs='+', type=str,
 parser.add_argument('--deg_resolution', type=float, default=.04, help='Approximate resolution of coordinate grid. '
                                                                       'Used for geometry=state or geometry=grid,'
                                                                       'default .04')
-# Following arguments needed when running in PyCharm
-parser.add_argument("--mode", default='client')
-parser.add_argument("--port", default=50071)  # change port default as needed
 
 args = parser.parse_args()
 
