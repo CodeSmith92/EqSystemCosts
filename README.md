@@ -5,7 +5,7 @@ Program for extracting annual coal plant generation and related data; for calcul
 ## Updates 
 
 * 07/23/2021
-> Added 'year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX ($/MW-yr) and VOPEX ($/MWh) values for operational coal plants (based on EIA-923 data)
+> Added '--year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX ($/MW-yr) and VOPEX ($/MWh) values for operational coal plants (based on EIA-923 data)
 
 ## Setup
 1. Get an [NREL API Key](https://developer.nrel.gov/signup/):
