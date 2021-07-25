@@ -9,7 +9,7 @@ local_path = os.path.dirname(os.path.abspath(__file__))
 # CLI arguments
 parser = argparse.ArgumentParser(description='Command line arguments for data extraction and cost calculations')
 parser.add_argument('--year', type=int, choices=[2016, 2017, 2018, 2019, 2020], help='Data year. Must be in '
-                                                                                     '2010-2014 (inclusive).',
+                                                                                     '2016-2020 (inclusive).',
                     required=True)
 parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ https://developer.nrel.gov/signup/',
                     required=True)
