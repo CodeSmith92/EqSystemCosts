@@ -13,7 +13,7 @@ Program for extracting annual coal plant generation and related data; for calcul
 ## Updates 
 
 * 07/23/2021
-- [x] Added '--year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX ($/MW-yr) and VOPEX ($/MWh) values for operational coal plants (based on EIA-923 data)
+- [x] Added '--year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX, VOPEX, and related data for operational coal plants (based on EIA-923 data)
 
 ## Planned Updates
 - [ ] Incorporate discounting
