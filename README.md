@@ -1,6 +1,6 @@
 # EqSystemCosts
 
-Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs (FOPEX ($/MW-yr) and VOPEX ($/MWh)); and for calculating the capital and operational costs (CAPEX ($/MW) and FOPEX ($/MW-yr)) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. 
+Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs (FOPEX and VOPEX); and for calculating the capital and operational costs (CAPEX and FOPEX) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. 
 
 ## Cost Units
 
