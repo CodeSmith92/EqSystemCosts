@@ -2,12 +2,20 @@
 
 Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs (FOPEX ($/MW-yr) and VOPEX ($/MWh)); and for calculating the capital and operational costs (CAPEX ($/MW) and FOPEX ($/MW-yr)) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. 
 
+## Cost Units
+
+| Prime Mover  | CAPEX| FOPEX | VOPEX |
+| ----- | ---- | --------| -------- |
+| coal  | -  | $/MW-yr| $/MWh | 
+| wind  | $/MW  | $/MW-yr| - | 
+| solar | $/MW | $/MW-yr| - | 
+
 ## Updates 
 
 * 07/23/2021
 - [x] Added '--year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX ($/MW-yr) and VOPEX ($/MWh) values for operational coal plants (based on EIA-923 data)
 
-## Planned updates
+## Planned Updates
 - [ ] Incorporate discounting
 
 ## Setup
@@ -61,7 +69,7 @@ Example:
     python wind.py --year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution .5 --states NJ NY CT PA DE VA
 
 
-### Data sources:
+### Data Sources:
 
 1. [Wind Resource Data](https://www.nrel.gov/grid/wind-toolkit.html) [1-4]
 
