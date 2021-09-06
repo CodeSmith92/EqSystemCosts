@@ -7,15 +7,15 @@ coal_output = os.path.join(local_path, 'coal_data_output/')
 
 # CLI arguments
 parser = argparse.ArgumentParser(description='Command line arguments for data extraction and cost calculations')
-parser.add_argument('--year', type=int, choices=[2015, 2016, 2017, 2018, 2019, 2020], required=True,
-                    help='Data year. Must be in 2015-2020 (inclusive).')
+parser.add_argument('--data_year', type=int, choices=[2015, 2016, 2017, 2018, 2019, 2020], required=True,
+                    help='Year for data extraction. Must be in 2015-2020 (inclusive).')
 args = parser.parse_args()
 
 
 def getPlantList():
     """ Function to return relevant EIA-923 page 1 coal plant data for use in decarb + equity optimization model """
 
-    year = args.year
+    year = args.data_year
     # Import Comprehensive Power Plant List From EIA-923 Page 1
     file_path = os.path.join(local_path, f'coal_plant_data/EIA923GenFuel{year}.csv')
     cpl = pd.read_csv(file_path)
@@ -26,11 +26,11 @@ def getPlantList():
          'AER\nFuel Type Code', 'Total Fuel Consumption\nMMBtu', 'Net Generation\n(Megawatthours)']]
     cpl.rename(
         columns={'Plant Id': 'ORIS_ID', 'Combined Heat And\nPower Plant': 'Combined_Heat', 'Plant Name': 'Plant_Name',
-                 'Plant State': 'State', 'EIA Sector Number': 'EIA_Sector', 'AER\nFuel Type Code': 'AER',
+                 'Plant State': 'State', 'EIA Sector Number': 'EIA_Sector', 'AER\nFuel Type Code': 'Fuel_Type',
                  'Total Fuel Consumption\nMMBtu': 'FuelCon_MMBTU',
                  'Net Generation\n(Megawatthours)': 'Gen_MWh'}, inplace=True)
 
-    cpl = cpl[cpl['AER'].str.contains('COL|WOC')]
+    cpl = cpl[cpl['Fuel_Type'].str.contains('COL|WOC')]
 
     # Filter out any potential non-operational plants
     cpl = cpl[cpl.FuelCon_MMBTU != 0]
@@ -48,6 +48,7 @@ def getPlantList():
     # Clean up
     cpl = cpl.drop_duplicates(subset=['ORIS_ID', 'Plant_Name'])
     cpl = cpl.reset_index(drop=True)
+
     del cpl['FuelCon_MMBTU']
     del cpl['Gen_MWh']
 
@@ -58,10 +59,13 @@ def getPlantList():
     return cpl
 
 
+# Regulated Coal Plants
 def getRegCoalCosts():
-    """ calculates annual operation costs (FOPEX, VOPEX) for regulated coal plants """
+    """ Function to calculate annual variable operation costs (VOPEX) for regulated coal plants as reported by EIA-923.
+    Values after 2020 are projections provided by NREL ATB 2021 """
 
-    year = args.year
+    year = args.data_year
+
     # Load coal plant list for merge
     cpl = getPlantList()
 
@@ -94,10 +98,10 @@ def getRegCoalCosts():
     coalCostsReg.loc[:, 'Heat_Rate'] = coalCostsReg['NetFuelCon_MMBTU'] / coalCostsReg['NetGen_MWh']
     coalCostsReg.loc[:, 'Marginal_Fuel_Cost'] = (coalCostsReg['Heat_Rate'] * coalCostsReg['Avg_Fuel_Cost'])
 
-    # Parameter values taken from Lazard and NREL ATB 2020
-    coalCostsReg.loc[:, 'VOM'] = 4.5  # $/MWh
+    # Parameter values adapted from Lazard LCOE Analysis v14.0 and NREL ATB 2021
+    coalCostsReg.loc[:, 'VOM'] = 4.35  # $/MWh
     coalCostsReg.loc[:, 'Coal_VOPEX'] = coalCostsReg['Marginal_Fuel_Cost'] + coalCostsReg['VOM']  # $/MWh
-    coalCostsReg.loc[:, 'Coal_FOPEX'] = 40 * (10**3)  # $/MW-yr
+    coalCostsReg.loc[:, 'Coal_FOPEX'] = 31.75 * (10**3)  # $/MW-yr
 
     # Local file output
     reg_output = os.path.join(coal_output, f'CoalCostsReg{year}.csv')
@@ -108,9 +112,9 @@ def getRegCoalCosts():
 
 # Unregulated Coal Plants
 def getUnrCoalCosts():
-    """ estimates annual operation costs for unregulated coal plants """
+    """ Function to estimate annual variable operation costs for unregulated coal plants """
 
-    year = args.year
+    year = args.data_year
     # Load coal plant list for merge
     cpl = getPlantList()
 
@@ -129,8 +133,9 @@ def getUnrCoalCosts():
     # Check average heat content of unregulated coal plants specifically
     print("Average heat content of UNR coal plants: ", fcl['Avg_Heat_Content'].mean())
 
-    fcl.loc[:, 'Fuel_Cost'] = 1.925  # $/MMBTU --> calculated outside of code
+    fcl.loc[:, 'Fuel_Cost'] = 1.925  # $/MMBTU --> see GitHub documentation
 
+    # Actually an estimated fuel cost, but referred to as "Avg_Fuel_Cost" for dataframe merging
     fcl = fcl.astype({'Fuel_Cost': float})
     fcl_unr = fcl.groupby('ORIS_ID')['Fuel_Cost'].mean().rename('Avg_Fuel_Cost').reset_index()
 
@@ -142,9 +147,9 @@ def getUnrCoalCosts():
     coalCostsUnr.loc[:, 'Marginal_Fuel_Cost'] = (coalCostsUnr['Heat_Rate'] * coalCostsUnr['Avg_Fuel_Cost'])
 
     # Parameter values taken from Lazard and NREL ATB 2020
-    coalCostsUnr.loc[:, 'VOM'] = 4.5  # $/MWh
+    coalCostsUnr.loc[:, 'VOM'] = 4.35  # $/MWh
     coalCostsUnr.loc[:, 'Coal_VOPEX'] = coalCostsUnr['Marginal_Fuel_Cost'] + coalCostsUnr['VOM']  # $/MWh
-    coalCostsUnr.loc[:, 'Coal_FOPEX'] = 40 * (10**3)  # $/MW-yr
+    coalCostsUnr.loc[:, 'Coal_FOPEX'] = 31.75 * (10**3)  # $/MW-yr
 
     # Local file output
     unr_output = os.path.join(coal_output, f'CoalCostsUnr{year}.csv')
@@ -156,7 +161,7 @@ def getUnrCoalCosts():
 def mergeCosts():
     """ merges annual operation cost dataframes for regulated and unregulated coal plants  """
 
-    year = args.year
+    year = args.data_year
 
     costsReg = getRegCoalCosts()
     costsUnr = getUnrCoalCosts()
