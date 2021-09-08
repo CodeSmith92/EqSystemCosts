@@ -1,6 +1,6 @@
 # EqSystemCosts
 
-Program for extracting individual (coal plant) generator data, and calclating annual coal plant generation; for determining each coal plant's annual variable operating costs (VOPEX) based on the calclation of marginal fuel cost; and for providing the capital and fixed operational costs (CAPEX and FOPEX) of wind and solar power for 2021 through 2030. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. The files 'wind.py' and 'solar.py' are dependent on data from the most up-to-date NREL Annual Technology Baseline (2021). 
+Program for extracting individual (coal plant) generator data, and calculating annual coal plant generation; for determining each coal plant's annual variable operating costs (VOPEX) based on the calculation of marginal fuel cost; and for providing the capital and fixed operational costs (CAPEX and FOPEX) of wind and solar power for 2021 through 2030. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. The files 'wind.py' and 'solar.py' are dependent on data from the most up-to-date NREL Annual Technology Baseline (2021). 
 
 ## Cost Units
 
