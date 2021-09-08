@@ -1,6 +1,6 @@
 # EqSystemCosts
 
-Program for extracting individual coal plant generator data, and calclating annual coal plant generation; for calculating each coal plant's annual variable operating (VOPEX) according to fuel consumption and cost; and for calculating the capital and operational costs (CAPEX and FOPEX) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. The files 'wind.py' and 'solar.py' are dependent on data from the most up-to-date NREL Annual Technology Baseline (2021). 
+Program for extracting individual (coal plant) generator data, and calclating annual coal plant generation; for determining each coal plant's annual variable operating costs (VOPEX) based on the calclation of marginal fuel cost; and for providing the capital and fixed operational costs (CAPEX and FOPEX) of wind and solar power for 2021 through 2030. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. The files 'wind.py' and 'solar.py' are dependent on data from the most up-to-date NREL Annual Technology Baseline (2021). 
 
 ## Cost Units
 
@@ -15,7 +15,7 @@ Program for extracting individual coal plant generator data, and calclating annu
 * 07/23/2021
 - [x] Added '--data_year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX, VOPEX, and related data for operational coal plants (based on EIA-923 data)
 * 09/07/2021
-- [x] Finished updating 
+- [x] Updated coal.py, wind.py, and solar.py based on ATB 2021. In the ATB 2020, wind CAPEX varied spatially, and temporally. In ATB 2021, wind CAPEX is not locationally dependent on wind resource. This means that CAPEX only varies temporally. 
 
 ## Setup
 1. Get an [NREL API Key](https://developer.nrel.gov/signup/):
@@ -64,7 +64,7 @@ When running from the command line, terminal, or shell, the '--data_year' parame
 
 Example:
 
-    python wind.py --data_year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution .5 --states NJ NY CT PA DE VA
+    python wind.py --data_year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution 0.5 --states NJ NY CT PA DE VA
 
 
 ### Data Sources:
@@ -79,6 +79,9 @@ Example:
 
 ### EIA-923
 >"The survey Form EIA-923 collects detailed electric power data -- monthly and annually -- on electricity generation, fuel consumption, fossil fuel stocks, and receipts at the power plant and prime mover level."
+
+### NREL ATB
+>"To inform electric and transportation sector analysis in the United States, each year NREL provides a robust set of modeling input assumptions for energy technologies (the Annual Technology Baseline) and a diverse set of potential electricity generation futures or modeling scenarios (Standard Scenarios)."
 
 ## Citations
 [1] Draxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. Overview and Meteorological Validation of the Wind Integration National Dataset Toolkit (Technical Report, NREL/TP-5000-61740). Golden, CO: National Renewable Energy Laboratory.
