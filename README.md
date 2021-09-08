@@ -1,6 +1,6 @@
 # EqSystemCosts
 
-Program for extracting annual coal plant generation and related data; for calculating each coal plant's annual operating costs (FOPEX and VOPEX); and for calculating the capital and operational costs (CAPEX and FOPEX) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. 
+Program for extracting individual coal plant generator data, and calclating annual coal plant generation; for calculating each coal plant's annual variable operating (VOPEX) according to fuel consumption and cost; and for calculating the capital and operational costs (CAPEX and FOPEX) of wind and solar power. The file 'coal.py' relies primarily on data input from the Energy Information Administration form EIA-923. The files 'wind.py' and 'solar.py' are dependent on data from the most up-to-date NREL Annual Technology Baseline (2021). 
 
 ## Cost Units
 
@@ -13,10 +13,9 @@ Program for extracting annual coal plant generation and related data; for calcul
 ## Updates 
 
 * 07/23/2021
-- [x] Added '--year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX, VOPEX, and related data for operational coal plants (based on EIA-923 data)
-
-## Planned Updates
-- [ ] Incorporate discounting
+- [x] Added '--data_year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX, VOPEX, and related data for operational coal plants (based on EIA-923 data)
+* 09/07/2021
+- [x] Finished updating 
 
 ## Setup
 1. Get an [NREL API Key](https://developer.nrel.gov/signup/):
@@ -38,22 +37,21 @@ Program for extracting annual coal plant generation and related data; for calcul
 
 ## CLI: Coal
 
-When running from the command line, terminal, or shell, the '--year' parameter must be passed as a key-value pair. For example:
+When running from the command line, terminal, or shell, the '--data_year' parameter must be passed as a key-value pair. For example:
 
-    python coal.py --year 2020
-
+    python coal.py --data_year 2020
 
 
 | Key   | Type | Options | Required | Description|
 | ----- | ---- | --------| -------- | ---------- |
-| `year`  | int  | 2015-2020| Yes     | Inclusive  |
+| `data_year`  | int  | 2015-2020| Yes     | Inclusive  |
 
 
 ## CLI: Wind and Solar
 
 | Key   | Type | Options | Required | Description|
 | ----- | ---- | --------| -------- | ---------- |
-| `year`  | int  | 2010-2014 (wind); 2016-2020 (solar) | Yes     | Inclusive  |
+| `data_year`  | int  | 2010-2014 (wind); 2016-2020 (solar) | Yes     | Inclusive  |
 | `api_key` | str |         | Yes     |            |
 | `email`  | str  |         | Yes     |            |
 | `geometry` | str | `grid`, `state` | Yes | RE site options --> `grid`: Every point in a grid from a min lat/lon to a max lat/lon. `state`: Grid bounded by one or multiple states.|
@@ -66,7 +64,7 @@ When running from the command line, terminal, or shell, the '--year' parameter m
 
 Example:
 
-    python wind.py --year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution .5 --states NJ NY CT PA DE VA
+    python wind.py --data_year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution .5 --states NJ NY CT PA DE VA
 
 
 ### Data Sources:
