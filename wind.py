@@ -29,7 +29,7 @@ parser.add_argument('--deg_resolution', type=float, default=.04, help='Approxima
 args = parser.parse_args()
 
 
-def getWindData(year, lat, lon):
+def getWindData(year, lat, lon):  # Source code from ijbd (GitHub user)
     """ by year and coordinate --> retrieves wind resource data from NREL's WIND Toolkit, and cost data from ATB 2021
     """
 
@@ -107,7 +107,7 @@ def getWindCosts():
     return wind_atb
 
 
-def getCoords():
+def getCoords():  # Source code from ijbd (GitHub user)
     if args.geometry == 'grid':
         coordinates = []
 
