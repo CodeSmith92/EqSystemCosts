@@ -6,7 +6,6 @@ from shapely.geometry import Point
 import os
 
 local_path = os.path.dirname(os.path.abspath(__file__))
-print(local_path)
 
 # CLI arguments
 parser = argparse.ArgumentParser(description='Command line arguments for data extraction and cost calculations')
@@ -219,7 +218,7 @@ def mergeData():
 
 
 def main():
-    print(f'local path: {local_path}')
+    print(f'local path: {local_path}')  # quick check
 
     windCosts = mergeData()
 
@@ -227,9 +226,8 @@ def main():
 
     windCosts.to_csv(out_path, index=False)
 
-    print('finished!')
+    print('That\'s all folks!')
 
 
 if __name__ == '__main__':
     main()
-
