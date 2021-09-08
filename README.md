@@ -15,7 +15,7 @@ Program for extracting individual (coal plant) generator data, and calclating an
 * 07/23/2021
 - [x] Added '--data_year' argument (2015-2020 inclusive) to coal.py --> returns FOPEX, VOPEX, and related data for operational coal plants (based on EIA-923 data)
 * 09/07/2021
-- [x] Updated coal.py, wind.py, and solar.py based on ATB 2021, and Lazard's LCOE Analysis v14.0. In the ATB 2020, wind CAPEX varied spatially, and temporally. In ATB 2021, wind CAPEX is not locationally dependent on wind resource. This means that CAPEX only varies temporally. 
+- [x] Updated coal.py, wind.py, and solar.py based on ATB 2021, and Lazard's LCOE Analysis v14.0. In the ATB 2020, wind CAPEX varied both spatially and temporally. In ATB 2021, wind CAPEX is not locationally dependent on wind resource. This means that CAPEX now only varies temporally. 
 
 ## Setup
 1. Get an [NREL API Key](https://developer.nrel.gov/signup/):
