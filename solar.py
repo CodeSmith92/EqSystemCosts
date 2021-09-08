@@ -8,8 +8,9 @@ local_path = os.path.dirname(os.path.abspath(__file__))
 
 # CLI arguments
 parser = argparse.ArgumentParser(description='Command line arguments for data extraction and cost calculations')
-parser.add_argument('--year', type=int, choices=[2016, 2017, 2018, 2019, 2020], help='Data year. Must be in '
-                                                                                     '2016-2020 (inclusive).',
+parser.add_argument('--data_year', type=int, choices=[2016, 2017, 2018, 2019, 2020],
+                    help='Year of data extraction. Must '
+                         'be in 2016-2020 (inclusive).',
                     required=True)
 parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ https://developer.nrel.gov/signup/',
                     required=True)
@@ -28,7 +29,7 @@ parser.add_argument('--deg_resolution', type=float, default=.04, help='Approxima
 args = parser.parse_args()
 
 
-def getCoords():
+def getCoords():  # Source code from ijbd (GitHub user)
     if args.geometry == 'grid':
         coordinates = []
 
@@ -75,7 +76,7 @@ def getCoords():
     return coordinates
 
 
-def getSolarData(year, lat, lon):
+def getSolarData(year, lat, lon):  # Source code from ijbd (GitHub user)
 
     solarCSV = os.path.join(local_path, f'solar_data_output/{lat}_{lon}_nsrdb.csv')
 
@@ -107,11 +108,37 @@ def getSolarData(year, lat, lon):
     return lat, lon, nsrdbLat, nsrdbLon, elevation
 
 
-def main():
-    print(f'local path: {local_path}')
-    print(getCoords())
+def getSolarCosts():
+    """Load NREL ATB data for access to future cost projections (2021-2035)"""
 
-    year = args.year
+    atb_path = os.path.join(local_path, 'ATB/ATB2021.csv')
+    atb = pd.read_csv(atb_path)
+
+    sol_atb = atb[['TECH', 'YEAR', 'CAPEX_($/MW)', 'FOPEX_($/MW)']]
+
+    sol_atb = sol_atb[sol_atb['TECH'] == 'Solar']
+    del sol_atb['TECH']
+
+    convert_dict = {'YEAR': int,
+                    'CAPEX_($/MW)': float,
+                    'FOPEX_($/MW)': float
+                    }
+
+    sol_atb = sol_atb.astype(convert_dict).reset_index(drop=True)
+
+    print(sol_atb)
+    print(sol_atb.dtypes)
+
+    return sol_atb
+
+
+def mergeData():
+    year = args.data_year
+    timespan = range(2021, 2031)
+
+    sol_atb = getSolarCosts()
+
+    print(getCoords())
     coords = getCoords()
     print(f'{len(coords)} coordinates found...')
 
@@ -119,23 +146,66 @@ def main():
     for i in range(len(coords)):
         lat = coords[i][0]
         lon = coords[i][1]
-        print(getSolarData(year, lat, lon))
 
-        data.append((getSolarData(year, lat, lon)))
+        data.append(getSolarData(year, lat, lon))
 
     solarCosts = pd.DataFrame(data, columns=('lat', 'lon', 'nsrdbLat', 'nsrdbLon', 'elevation'))
 
-    # Value based on NREL ATB 2020 and Lazard v14.0 reports
-    solarCosts.loc[:, 'FOPEX'] = 15 * (10**3)  # $/MW-yr
-    solarCosts.loc[:, 'CAPEX'] = 1300000  # $/MW
+    for y in timespan:
+        if y == 2021:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2021'] = sol_atb.iloc[0]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2021'] = sol_atb.iloc[0]['FOPEX_($/MW)']
 
-    # Output
+        elif y == 2022:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2022'] = sol_atb.iloc[1]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2022'] = sol_atb.iloc[1]['FOPEX_($/MW)']
+
+        elif y == 2023:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2023'] = sol_atb.iloc[2]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2023'] = sol_atb.iloc[2]['FOPEX_($/MW)']
+
+        elif y == 2024:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2024'] = sol_atb.iloc[3]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2024'] = sol_atb.iloc[3]['FOPEX_($/MW)']
+
+        elif y == 2025:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2025'] = sol_atb.iloc[4]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2025'] = sol_atb.iloc[4]['FOPEX_($/MW)']
+
+        elif y == 2026:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2026'] = sol_atb.iloc[5]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2026'] = sol_atb.iloc[5]['FOPEX_($/MW)']
+
+        elif y == 2027:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2027'] = sol_atb.iloc[6]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2027'] = sol_atb.iloc[6]['FOPEX_($/MW)']
+
+        elif y == 2028:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2028'] = sol_atb.iloc[7]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2028'] = sol_atb.iloc[7]['FOPEX_($/MW)']
+
+        elif y == 2029:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2029'] = sol_atb.iloc[8]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2029'] = sol_atb.iloc[8]['FOPEX_($/MW)']
+
+        else:
+            solarCosts.loc[:, 'CAPEX_($/MW)_2030'] = sol_atb.iloc[9]['CAPEX_($/MW)']
+            solarCosts.loc[:, 'FOPEX_($/MW)_2030'] = sol_atb.iloc[9]['FOPEX_($/MW)']
+
+    return solarCosts
+
+
+def main():
+    print(f'local path: {local_path}')  # quick check
+
+    solarCosts = mergeData()
+
     out_path = os.path.join(local_path, 'solar_data_output/solar_costs.csv')
+
     solarCosts.to_csv(out_path, index=False)
 
-    print('Finished!')
+    print('Fin')
 
 
 if __name__ == '__main__':
     main()
-
