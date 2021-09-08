@@ -6,12 +6,13 @@ from shapely.geometry import Point
 import os
 
 local_path = os.path.dirname(os.path.abspath(__file__))
+print(local_path)
 
 # CLI arguments
 parser = argparse.ArgumentParser(description='Command line arguments for data extraction and cost calculations')
-parser.add_argument('--year', type=int, choices=[2010, 2011, 2012, 2013, 2014], help='Data year. Must be in '
-                                                                                     '2010-2014 (inclusive).',
-                    required=True)
+parser.add_argument('--data_year', type=int, choices=[2010, 2011, 2012, 2013, 2014], help='Year of data extraction. '
+                                                                                          'Must be in 2010-2014 ('
+                                                                                          'inclusive).', required=True)
 parser.add_argument('--api_key', type=str, help='NREL API Key. Sign up @ https://developer.nrel.gov/signup/',
                     required=True)
 parser.add_argument('--email', type=str, help='Email address.', required=True)
@@ -26,12 +27,12 @@ parser.add_argument('--deg_resolution', type=float, default=.04, help='Approxima
                                                                       'Used for geometry=state or geometry=grid,'
                                                                       'default .04')
 
-
 args = parser.parse_args()
 
 
 def getWindData(year, lat, lon):
-    """ by year and coordinate --> retrieves wind resource data from NREL's WIND Toolkit and ATB 2020 """
+    """ by year and coordinate --> retrieves wind resource data from NREL's WIND Toolkit, and cost data from ATB 2021
+    """
 
     windCSV = os.path.join(local_path, f'wind_data_output/{lat}_{lon}_wtk.csv')
 
@@ -58,42 +59,53 @@ def getWindData(year, lat, lon):
     # Find wind speed
     windSpeed100 = np.median(pd.read_csv(windCSV, skiprows=[0, 1, 3, 4], usecols=['Speed']).values)
 
-    # Adapted from NREL ATB 2020 .. wind speed (m/s), CAPEX ($/MW)
-    if windSpeed100 >= 9.01:
+    # Adapted from NREL ATB 2021 .. wind speed (m/s)
+    if windSpeed100 > 9.0:
         windClass = 1
-        CAPEX = 1642020
-    elif windSpeed100 >= 8.77:
+    elif windSpeed100 >= 8.8:
         windClass = 2
-        CAPEX = 1523730
-    elif windSpeed100 >= 8.57:
+    elif windSpeed100 >= 8.6:
         windClass = 3
-        CAPEX = 1492620
-    elif windSpeed100 >= 8.35:
+    elif windSpeed100 >= 8.4:
         windClass = 4
-        CAPEX = 1483590
-    elif windSpeed100 >= 8.07:
+    elif windSpeed100 >= 8.1:
         windClass = 5
-        CAPEX = 1522560
-    elif windSpeed100 >= 7.62:
+    elif windSpeed100 >= 7.6:
         windClass = 6
-        CAPEX = 1665030
     elif windSpeed100 >= 7.1:
         windClass = 7
-        CAPEX = 1830930
-    elif windSpeed100 >= 6.53:
+    elif windSpeed100 >= 6.5:
         windClass = 8
-        CAPEX = 2168570
     elif windSpeed100 >= 5.9:
         windClass = 9
-        CAPEX = 2548910
-    elif windSpeed100 >= 1.72:
-        windClass = 10
-        CAPEX = 2690060
     else:
-        windClass = 'NA'
-        CAPEX = 'NA'
+        windClass = 10
 
-    return lat, lon, windSpeed100, windClass, CAPEX
+    return lat, lon, windSpeed100, windClass
+
+
+def getWindCosts():
+    """Load NREL ATB data for access to future cost projections (2021-2035)"""
+
+    atb_path = os.path.join(local_path, 'ATB/ATB2021.csv')
+    atb = pd.read_csv(atb_path)
+
+    wind_atb = atb[['TECH', 'YEAR', 'CAPEX_($/MW)', 'FOPEX_($/MW)']]
+
+    wind_atb = wind_atb[wind_atb['TECH'] == 'Wind']
+    del wind_atb['TECH']
+
+    convert_dict = {'YEAR': int,
+                    'CAPEX_($/MW)': float,
+                    'FOPEX_($/MW)': float
+                    }
+
+    wind_atb = wind_atb.astype(convert_dict).reset_index(drop=True)
+
+    print(wind_atb)
+    print(wind_atb.dtypes)
+
+    return wind_atb
 
 
 def getCoords():
@@ -143,11 +155,13 @@ def getCoords():
     return coordinates
 
 
-def main():
-    print(f'local path: {local_path}')
-    print(getCoords())
+def mergeData():
+    year = args.data_year
+    timespan = range(2021, 2031)
 
-    year = args.year
+    wind_atb = getWindCosts()
+
+    print(getCoords())
     coords = getCoords()
     print(f'{len(coords)} coordinates found...')
 
@@ -155,17 +169,62 @@ def main():
     for i in range(len(coords)):
         lat = coords[i][0]
         lon = coords[i][1]
-        print(getWindData(year, lat, lon))
 
-        data.append((getWindData(year, lat, lon)))
+        data.append(getWindData(year, lat, lon))
 
-    windCosts = pd.DataFrame(data, columns=('lat', 'lon', 'windSpeed', 'windClass', 'CAPEX'))
+    windCosts = pd.DataFrame(data, columns=('lat', 'lon', 'windSpeed', 'windClass'))
 
-    # Value based on NREL ATB 2020 and Lazard v14.0 reports
-    windCosts.loc[:, 'FOPEX'] = 40 * (10**3)  # $/MW-yr
+    for y in timespan:
+        if y == 2021:
+            windCosts.loc[:, 'CAPEX_($/MW)_2021'] = wind_atb.iloc[0]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2021'] = wind_atb.iloc[0]['FOPEX_($/MW)']
 
-    # Output
+        elif y == 2022:
+            windCosts.loc[:, 'CAPEX_($/MW)_2022'] = wind_atb.iloc[1]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2022'] = wind_atb.iloc[1]['FOPEX_($/MW)']
+
+        elif y == 2023:
+            windCosts.loc[:, 'CAPEX_($/MW)_2023'] = wind_atb.iloc[2]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2023'] = wind_atb.iloc[2]['FOPEX_($/MW)']
+
+        elif y == 2024:
+            windCosts.loc[:, 'CAPEX_($/MW)_2024'] = wind_atb.iloc[3]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2024'] = wind_atb.iloc[3]['FOPEX_($/MW)']
+
+        elif y == 2025:
+            windCosts.loc[:, 'CAPEX_($/MW)_2025'] = wind_atb.iloc[4]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2025'] = wind_atb.iloc[4]['FOPEX_($/MW)']
+
+        elif y == 2026:
+            windCosts.loc[:, 'CAPEX_($/MW)_2026'] = wind_atb.iloc[5]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2026'] = wind_atb.iloc[5]['FOPEX_($/MW)']
+
+        elif y == 2027:
+            windCosts.loc[:, 'CAPEX_($/MW)_2027'] = wind_atb.iloc[6]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2027'] = wind_atb.iloc[6]['FOPEX_($/MW)']
+
+        elif y == 2028:
+            windCosts.loc[:, 'CAPEX_($/MW)_2028'] = wind_atb.iloc[7]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2028'] = wind_atb.iloc[7]['FOPEX_($/MW)']
+
+        elif y == 2029:
+            windCosts.loc[:, 'CAPEX_($/MW)_2029'] = wind_atb.iloc[8]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2029'] = wind_atb.iloc[8]['FOPEX_($/MW)']
+
+        else:
+            windCosts.loc[:, 'CAPEX_($/MW)_2030'] = wind_atb.iloc[9]['CAPEX_($/MW)']
+            windCosts.loc[:, 'FOPEX_($/MW)_2030'] = wind_atb.iloc[9]['FOPEX_($/MW)']
+
+    return windCosts
+
+
+def main():
+    print(f'local path: {local_path}')
+
+    windCosts = mergeData()
+
     out_path = os.path.join(local_path, 'wind_data_output/wind_costs.csv')
+
     windCosts.to_csv(out_path, index=False)
 
     print('finished!')
@@ -173,3 +232,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
