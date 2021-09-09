@@ -83,7 +83,7 @@ Example:
 
 ### Supplementary Material:
 
-This folder contains the fuel cost documentation and calculation for unregulated coal plants, as well as a plot showing the former (ATB 2020) geographic variability of wind farm CAPEX.
+>This folder contains the fuel cost documentation and calculation for unregulated coal plants, as well as a plot showing the former (ATB 2020) geographic variability of wind farm CAPEX.
 
 ### EIA-923
 >"The survey Form EIA-923 collects detailed electric power data -- monthly and annually -- on electricity generation, fuel consumption, fossil fuel stocks, and receipts at the power plant and prime mover level."
