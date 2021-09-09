@@ -134,7 +134,7 @@ def getUnrCoalCosts():
     # Check average heat content of unregulated coal plants specifically
     print("Average heat content of UNR coal plants: ", fcl['Avg_Heat_Content'].mean(), ' MMBTU/Short-ton')
 
-    fcl.loc[:, 'Fuel_Cost'] = 1.925  # $/MMBTU --> see GitHub documentation
+    fcl.loc[:, 'Fuel_Cost'] = 1.925  # $/MMBTU --> see Supplentary Material
 
     # Actually an estimated fuel cost, but referred to as "Avg_Fuel_Cost" for dataframe merging
     fcl = fcl.astype({'Fuel_Cost': float})
