@@ -88,20 +88,21 @@ def getRegCoalCosts():
     del fcl['Avg_Heat_Content']
     fcl = fcl.astype({'FUEL_COST': float})
 
-    fcl_reg = fcl.groupby('ORIS_ID')["FUEL_COST"].mean().rename("Avg_Fuel_Cost").reset_index()
-    fcl_reg['Avg_Fuel_Cost'] = fcl_reg['Avg_Fuel_Cost'] / 100  # for units of $/MMBTU
+    fcl_reg = fcl.groupby('ORIS_ID')["FUEL_COST"].mean().rename("Avg_Fuel_Cost_($/MMBTU)").reset_index()
+    fcl_reg['Avg_Fuel_Cost_($/MMBTU)'] = fcl_reg['Avg_Fuel_Cost_($/MMBTU)'] / 100  # for units of $/MMBTU
 
     # Merge dataframes based on ORIS ID
     coalCostsReg = pd.merge(cpl, fcl_reg, on=['ORIS_ID'])
 
     # Calculate annualized marginal cost of fuel
-    coalCostsReg.loc[:, 'Heat_Rate'] = coalCostsReg['NetFuelCon_MMBTU'] / coalCostsReg['NetGen_MWh']
-    coalCostsReg.loc[:, 'Marginal_Fuel_Cost'] = (coalCostsReg['Heat_Rate'] * coalCostsReg['Avg_Fuel_Cost'])
+    coalCostsReg.loc[:, 'Heat_Rate_(MMBTU/MWh)'] = coalCostsReg['NetFuelCon_MMBTU'] / coalCostsReg['NetGen_MWh']
+    coalCostsReg.loc[:, 'Marginal_Fuel_Cost_($/MWh)'] = (coalCostsReg['Heat_Rate_(MMBTU/MWh)']
+                                                         * coalCostsReg['Avg_Fuel_Cost_($/MMBTU)'])
 
     # Parameter values adapted from Lazard LCOE Analysis v14.0 and NREL ATB 2021
-    coalCostsReg.loc[:, 'VOM'] = 4.35  # $/MWh
-    coalCostsReg.loc[:, 'Coal_VOPEX'] = coalCostsReg['Marginal_Fuel_Cost'] + coalCostsReg['VOM']  # $/MWh
-    coalCostsReg.loc[:, 'Coal_FOPEX'] = 31.75 * (10**3)  # $/MW-yr
+    coalCostsReg.loc[:, 'VOM_($/MWh)'] = 4.35
+    coalCostsReg.loc[:, 'Coal_VOPEX_($/MWh)'] = coalCostsReg['Marginal_Fuel_Cost_($/MWh)'] + coalCostsReg['VOM_($/MWh)']
+    coalCostsReg.loc[:, 'Coal_FOPEX_($/MW)'] = 31.75 * (10**3)  # $/MW-yr, assumed static in subsequent years
 
     # Local file output
     reg_output = os.path.join(coal_output, f'CoalCostsReg{year}.csv')
@@ -137,19 +138,20 @@ def getUnrCoalCosts():
 
     # Actually an estimated fuel cost, but referred to as "Avg_Fuel_Cost" for dataframe merging
     fcl = fcl.astype({'Fuel_Cost': float})
-    fcl_unr = fcl.groupby('ORIS_ID')['Fuel_Cost'].mean().rename('Avg_Fuel_Cost').reset_index()
+    fcl_unr = fcl.groupby('ORIS_ID')['Fuel_Cost'].mean().rename('Avg_Fuel_Cost_($/MMBTU)').reset_index()
 
     # Merge dataframes based on ORIS ID
     coalCostsUnr = pd.merge(cpl, fcl_unr, on=['ORIS_ID'])
 
     # Calculate annualized marginal cost of fuel
-    coalCostsUnr.loc[:, 'Heat_Rate'] = coalCostsUnr['NetFuelCon_MMBTU'] / coalCostsUnr['NetGen_MWh']
-    coalCostsUnr.loc[:, 'Marginal_Fuel_Cost'] = (coalCostsUnr['Heat_Rate'] * coalCostsUnr['Avg_Fuel_Cost'])
+    coalCostsUnr.loc[:, 'Heat_Rate_(MMBTU/MWh)'] = coalCostsUnr['NetFuelCon_MMBTU'] / coalCostsUnr['NetGen_MWh']
+    coalCostsUnr.loc[:, 'Marginal_Fuel_Cost_($/MWh)'] = (coalCostsUnr['Heat_Rate_(MMBTU/MWh)']
+                                                         * coalCostsUnr['Avg_Fuel_Cost_($/MMBTU)'])
 
     # Parameter values taken from Lazard and NREL ATB 2020
-    coalCostsUnr.loc[:, 'VOM'] = 4.35  # $/MWh
-    coalCostsUnr.loc[:, 'Coal_VOPEX'] = coalCostsUnr['Marginal_Fuel_Cost'] + coalCostsUnr['VOM']  # $/MWh
-    coalCostsUnr.loc[:, 'Coal_FOPEX'] = 31.75 * (10**3)  # $/MW-yr
+    coalCostsUnr.loc[:, 'VOM_($/MWh)'] = 4.35
+    coalCostsUnr.loc[:, 'Coal_VOPEX_($/MWh)'] = coalCostsUnr['Marginal_Fuel_Cost_($/MWh)'] + coalCostsUnr['VOM_($/MWh)']
+    coalCostsUnr.loc[:, 'Coal_FOPEX_($/MW)'] = 31.75 * (10**3)  # $/MW-yr
 
     # Local file output
     unr_output = os.path.join(coal_output, f'CoalCostsUnr{year}.csv')
@@ -183,8 +185,9 @@ def main():
     print(f'Files in {cwd}: {files}')
 
     print(mergeCosts())
-    print('Finished!')
+    print('Finito!')
 
 
 if __name__ == '__main__':
     main()
+    
