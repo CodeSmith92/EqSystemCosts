@@ -17,6 +17,9 @@ Program for extracting individual (coal plant) generator data, and calculating a
 * 09/07/2021
 - [x] Updated coal.py, wind.py, and solar.py based on ATB 2021, and Lazard's LCOE Analysis v14.0. In the ATB 2020, wind CAPEX varied both spatially and temporally. In ATB 2021, wind CAPEX is not locationally dependent on wind resource. This means that CAPEX now only varies temporally. 
 
+TODO: 
+- [ ] Simplify scripts to increase data output speed
+
 ## Setup
 1. Get an [NREL API Key](https://developer.nrel.gov/signup/):
 > Only necesarry for 'wind.py' and 'solar.py'
