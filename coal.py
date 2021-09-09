@@ -80,7 +80,7 @@ def getRegCoalCosts():
 
     # Print average coal plant heat content, and filter out unregulated coal plants
     fcl = fcl[fcl['FUEL_GROUP'] == 'Coal']
-    print("Average heat content for all coal plants (2020): ", fcl['Avg_Heat_Content'].mean())
+    print("Average heat content for all coal plants (2020): ", fcl['Avg_Heat_Content'].mean(), ' MMBTU/Short-ton')
 
     fcl = fcl[fcl['Regulated'] == 'REG']
 
@@ -132,7 +132,7 @@ def getUnrCoalCosts():
     fcl = fcl[fcl['Regulated'] == 'UNR']
 
     # Check average heat content of unregulated coal plants specifically
-    print("Average heat content of UNR coal plants: ", fcl['Avg_Heat_Content'].mean())
+    print("Average heat content of UNR coal plants: ", fcl['Avg_Heat_Content'].mean(), ' MMBTU/Short-ton')
 
     fcl.loc[:, 'Fuel_Cost'] = 1.925  # $/MMBTU --> see GitHub documentation
 
@@ -190,4 +190,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
