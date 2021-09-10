@@ -70,7 +70,7 @@ Example:
     python wind.py --data_year 2014 --api_key <my-key> --email <my-email> --geometry state --deg_resolution 0.5 --states NJ NY CT PA DE VA
 
 
-### Data Sources:
+### Sources:
 
 1. [Wind Resource Data](https://www.nrel.gov/grid/wind-toolkit.html) [1-4]
 
