@@ -82,6 +82,8 @@ Example:
 
 5. [ATB 2021](https://atb.nrel.gov/electricity/2021/index)
 
+6. [GitHub ijbd](https://github.com/ijbd/powGen-wtk-nsrdb)
+
 
 ### Supplementary Material:
 
